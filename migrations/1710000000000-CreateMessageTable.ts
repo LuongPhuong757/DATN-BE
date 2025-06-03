@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
 export class CreateMessageTable1710000000000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: "message",
+                name: "messages",
                 columns: [
                     {
                         name: "id",
@@ -14,19 +14,24 @@ export class CreateMessageTable1710000000000 implements MigrationInterface {
                         generationStrategy: "increment",
                     },
                     {
-                        name: "userId",
-                        type: "varchar",
+                        name: "user_id",
+                        type: "int",
                     },
                     {
-                        name: "room",
-                        type: "varchar",
+                        name: "sender_id",
+                        type: "int",
+                    },
+                    {
+                        name: "is_admin",
+                        type: "boolean",
+                        default: false,
                     },
                     {
                         name: "content",
                         type: "text",
                     },
                     {
-                        name: "timestamp",
+                        name: "created_at",
                         type: "timestamp",
                         default: "CURRENT_TIMESTAMP",
                     },
@@ -34,9 +39,38 @@ export class CreateMessageTable1710000000000 implements MigrationInterface {
             }),
             true
         );
+
+        // Add foreign keys
+        await queryRunner.createForeignKey(
+            "messages",
+            new TableForeignKey({
+                columnNames: ["user_id"],
+                referencedColumnNames: ["id"],
+                referencedTableName: "users",
+                onDelete: "CASCADE",
+            })
+        );
+
+        await queryRunner.createForeignKey(
+            "messages",
+            new TableForeignKey({
+                columnNames: ["sender_id"],
+                referencedColumnNames: ["id"],
+                referencedTableName: "users",
+                onDelete: "CASCADE",
+            })
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("message");
+        const table = await queryRunner.getTable("messages");
+        const foreignKeys = table.foreignKeys;
+
+        // Drop foreign keys first
+        for (const foreignKey of foreignKeys) {
+            await queryRunner.dropForeignKey("messages", foreignKey);
+        }
+
+        await queryRunner.dropTable("messages");
     }
 } 

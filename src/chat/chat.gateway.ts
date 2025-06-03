@@ -27,32 +27,50 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, room: string) {
+  @SubscribeMessage('joinUserRoom')
+  handleJoinUserRoom(client: Socket, userId: number) {
+    const room = `user_${userId}`;
     client.join(room);
-    return { event: 'joinRoom', data: { room } };
+    console.log(`Client ${client.id} joined room ${room}`);
+    return { event: 'joinUserRoom', data: { room } };
   }
 
-  @SubscribeMessage('leaveRoom')
-  handleLeaveRoom(client: Socket, room: string) {
-    client.leave(room);
-    return { event: 'leaveRoom', data: { room } };
+  @SubscribeMessage('joinAdminRoom')
+  handleJoinAdminRoom(client: Socket) {
+    const room = 'admin_room';
+    client.join(room);
+    return { event: 'joinAdminRoom', data: { room } };
   }
 
-  @SubscribeMessage('sendMessage')
-  async handleMessage(client: Socket, payload: { room: string; message: string; userId: string }) {
-    const { room, message, userId } = payload;
-    console.log(payload);
-    // Lưu message vào database
-    const savedMessage = await this.chatService.saveMessage(userId, room, message);
+  @SubscribeMessage('sendUserMessage')
+  async handleUserMessage(client: Socket, payload: { userId: number; content: string }) {
+    const { userId, content } = payload;
+    console.log(userId, content);
+    // Lưu tin nhắn từ user
+    const savedMessage = await this.chatService.saveMessage(userId, userId, content, false);
     
-    // Gửi message đến tất cả client trong room
-    this.server.to(room).emit('newMessage', {
-      userId,
-      message,
-      timestamp: new Date(),
-    });
+    // Gửi tin nhắn đến phòng của user
+    this.server.to(`user_${userId}`).emit('newMessage', savedMessage);
+    
+    // Gửi tin nhắn đến phòng admin
+    this.server.to('admin_room').emit('newUserMessage', savedMessage);
 
-    return { event: 'sendMessage', data: savedMessage };
+    return { event: 'sendUserMessage', data: savedMessage };
+  }
+
+  @SubscribeMessage('sendAdminMessage')
+  async handleAdminMessage(client: Socket, payload: { userId: number; content: string }) {
+    const { userId, content } = payload;
+    
+    // Lưu tin nhắn từ admin
+    const savedMessage = await this.chatService.saveMessage(userId, 0, content, true);
+    
+    // Gửi tin nhắn đến phòng của user
+    this.server.to(`user_${userId}`).emit('newMessage', savedMessage);
+    
+    // Gửi tin nhắn đến phòng admin
+    this.server.to('admin_room').emit('newAdminMessage', savedMessage);
+
+    return { event: 'sendAdminMessage', data: savedMessage };
   }
 } 

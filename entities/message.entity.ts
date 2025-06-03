@@ -1,19 +1,31 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from './user.entity';
 
-@Entity()
+@Entity('messages')
 export class Message {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  userId: string;
+  @Column({ name: 'user_id' })
+  userId: number;
 
-  @Column()
-  room: string;
+  @Column({ name: 'sender_id' })
+  senderId: number;
+
+  @Column({ name: 'is_admin', default: false })
+  isAdmin: boolean;
 
   @Column('text')
   content: string;
 
-  @CreateDateColumn()
-  timestamp: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'sender_id' })
+  sender: User;
 } 
