@@ -27,9 +27,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('joinRoom')
+  @SubscribeMessage('joinUserRoom')
   handleJoinRoom(client: Socket, roomId: number) {
-    const room = `room_${roomId}`;
+    const room = `${roomId}`;
     client.join(room);
     console.log(`Client ${client.id} joined room ${room}`);
     return { event: 'joinRoom', data: { room } };
@@ -43,14 +43,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('sendUserMessage')
-  async handleUserMessage(client: Socket, payload: { roomId: number; content: string }) {
-    const { roomId, content } = payload;
-    console.log(roomId, content);
+  async handleUserMessage(client: Socket, payload: { roomId: number; content: string, userId: number, isAdmin: boolean }) {
+    const { roomId, content, userId, isAdmin } = payload;
+    console.log(payload);
+
     // Lưu tin nhắn từ user
-    const savedMessage = await this.chatService.saveMessage(roomId, roomId, content, false);
+    const savedMessage = await this.chatService.saveMessage(roomId, userId, content, isAdmin);
     
     // Gửi tin nhắn đến phòng của user
-    this.server.to(`room_${roomId}`).emit('newMessage', savedMessage);
+    this.server.to(`${roomId}`).emit('newMessage', savedMessage);
     
     // Gửi tin nhắn đến phòng admin
     this.server.to('admin_room').emit('newUserMessage', savedMessage);

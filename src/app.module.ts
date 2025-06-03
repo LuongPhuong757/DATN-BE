@@ -21,9 +21,9 @@ import { ChatModule } from './chat/chat.module';
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      database: 'test',
+      database: 'interior',
       username: 'root',
-      password: 'Phuongkya123!',
+      password: '071221',
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       // Timezone configured on the MySQL server.
       // This is used to typecast server date/time values to JavaScript Date object and vice versa.
