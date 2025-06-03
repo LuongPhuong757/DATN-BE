@@ -6,8 +6,8 @@ export class Message {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'user_id' })
-  userId: number;
+  @Column({ name: 'room_id' })
+  roomId: number;
 
   @Column({ name: 'sender_id' })
   senderId: number;
@@ -22,8 +22,8 @@ export class Message {
   createdAt: Date;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @JoinColumn({ name: 'room_id' })
+  room: User;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'sender_id' })

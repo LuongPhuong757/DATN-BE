@@ -10,9 +10,9 @@ export class ChatService {
     private messageRepository: Repository<Message>,
   ) {}
 
-  async saveMessage(userId: number, senderId: number, content: string, isAdmin: boolean = false): Promise<Message> {
+  async saveMessage(roomId: number, senderId: number, content: string, isAdmin: boolean = false): Promise<Message> {
     const message = this.messageRepository.create({
-      userId,
+      roomId,
       senderId,
       content,
       isAdmin,
@@ -20,9 +20,9 @@ export class ChatService {
     return this.messageRepository.save(message);
   }
 
-  async getUserMessages(userId: number): Promise<Message[]> {
+  async getRoomMessages(roomId: number): Promise<Message[]> {
     return this.messageRepository.find({
-      where: { userId },
+      where: { roomId },
       relations: ['sender'],
       order: { createdAt: 'ASC' },
     });
@@ -30,14 +30,14 @@ export class ChatService {
 
   async getAdminMessages(): Promise<Message[]> {
     return this.messageRepository.find({
-      relations: ['user', 'sender'],
+      relations: ['room', 'sender'],
       order: { createdAt: 'DESC' },
     });
   }
 
-  async getUnreadMessageCount(userId: number): Promise<number> {
+  async getUnreadMessageCount(roomId: number): Promise<number> {
     return this.messageRepository.count({
-      where: { userId, isAdmin: true },
+      where: { roomId, isAdmin: true },
     });
   }
 } 

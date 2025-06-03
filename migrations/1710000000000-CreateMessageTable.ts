@@ -14,7 +14,7 @@ export class CreateMessageTable1710000000000 implements MigrationInterface {
                         generationStrategy: "increment",
                     },
                     {
-                        name: "user_id",
+                        name: "room_id",
                         type: "int",
                     },
                     {
@@ -44,7 +44,7 @@ export class CreateMessageTable1710000000000 implements MigrationInterface {
         await queryRunner.createForeignKey(
             "messages",
             new TableForeignKey({
-                columnNames: ["user_id"],
+                columnNames: ["room_id"],
                 referencedColumnNames: ["id"],
                 referencedTableName: "users",
                 onDelete: "CASCADE",

@@ -1,25 +1,25 @@
 import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { JwtAuthGuard } from 'src/user/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Chat')
 @Controller('chat')
-// @UseGuards(JwtAuthGuard)
-// @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  @Get('history/:userId')
-  @ApiOperation({ summary: 'Get chat history for a specific user' })
+  @Get('history/:roomId')
+  @ApiOperation({ summary: 'Get chat history for a specific room' })
   async getChatHistory(
-    @Param('userId') userId: number,
+    @Param('roomId') roomId: number,
     @Request() req,
   ) {
     // Kiểm tra nếu user đang request là admin hoặc là chính user đó
-    // if (req.user.role === 'admin' || req.user.id === userId) {
-      return this.chatService.getUserMessages(userId);
-    // }
+    if (req.user.role === 'admin' || req.user.id === roomId) {
+      return this.chatService.getRoomMessages(roomId);
+    }
     throw new Error('Unauthorized');
   }
 

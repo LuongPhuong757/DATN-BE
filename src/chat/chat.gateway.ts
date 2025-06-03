@@ -27,11 +27,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('joinUserRoom')
-  handleJoinUserRoom(client: Socket, userId: number) {
-    const room = `user_${userId}`;
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(client: Socket, roomId: number) {
+    const room = `room_${roomId}`;
+    client.join(room);
     console.log(`Client ${client.id} joined room ${room}`);
-    return { event: 'joinUserRoom', data: { room } };
+    return { event: 'joinRoom', data: { room } };
   }
 
   @SubscribeMessage('joinAdminRoom')
@@ -42,14 +43,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('sendUserMessage')
-  async handleUserMessage(client: Socket, payload: { userId: number; content: string }) {
-    const { userId, content } = payload;
-
+  async handleUserMessage(client: Socket, payload: { roomId: number; content: string }) {
+    const { roomId, content } = payload;
+    console.log(roomId, content);
     // Lưu tin nhắn từ user
-    const savedMessage = await this.chatService.saveMessage(userId, userId, content, false);
+    const savedMessage = await this.chatService.saveMessage(roomId, roomId, content, false);
     
     // Gửi tin nhắn đến phòng của user
-    this.server.to(`user_${userId}`).emit('newMessage', savedMessage);
+    this.server.to(`room_${roomId}`).emit('newMessage', savedMessage);
     
     // Gửi tin nhắn đến phòng admin
     this.server.to('admin_room').emit('newUserMessage', savedMessage);
@@ -58,14 +59,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('sendAdminMessage')
-  async handleAdminMessage(client: Socket, payload: { userId: number; content: string }) {
-    const { userId, content } = payload;
+  async handleAdminMessage(client: Socket, payload: { roomId: number; content: string }) {
+    const { roomId, content } = payload;
     
     // Lưu tin nhắn từ admin
-    const savedMessage = await this.chatService.saveMessage(userId, 0, content, true);
+    const savedMessage = await this.chatService.saveMessage(roomId, 0, content, true);
     
     // Gửi tin nhắn đến phòng của user
-    this.server.to(`user_${userId}`).emit('newMessage', savedMessage);
+    this.server.to(`room_${roomId}`).emit('newMessage', savedMessage);
     
     // Gửi tin nhắn đến phòng admin
     this.server.to('admin_room').emit('newAdminMessage', savedMessage);
