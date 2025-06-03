@@ -14,15 +14,16 @@ import { OrderModule } from './order/order.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StaticModule } from './static/static.module';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST,
+      host: 'localhost',
       port: 3306,
-      database: 'interior',
+      database: 'test',
       username: 'root',
-      password: '071221',
+      password: 'Phuongkya123!',
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       // Timezone configured on the MySQL server.
       // This is used to typecast server date/time values to JavaScript Date object and vice versa.
@@ -30,7 +31,7 @@ import { StaticModule } from './static/static.module';
       synchronize: false,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join('..', 'public'),
+      rootPath: join(__dirname, '..', 'public'),
     }),
     UserModule,
     BullModule.forRoot({
@@ -51,6 +52,7 @@ import { StaticModule } from './static/static.module';
       global: true,
     },
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
