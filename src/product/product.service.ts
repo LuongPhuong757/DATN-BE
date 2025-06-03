@@ -33,20 +33,12 @@ export class ProductService {
         category: type
       }
     }
-    // console.log(condition)
     if (status) {
       condition = {
         ...condition,
         status
       }
     }
-    // if (user.roles == ROLE.USER) {
-    //   condition = {
-    //     ...condition,
-    //     status: 0
-    //   }
-    // }
-    console.log(condition,'==============')
     let conditionOrderBy = {}
     if (orderBy == OrderByProduct.OUTSTANDING) {
       conditionOrderBy = {
@@ -67,11 +59,9 @@ export class ProductService {
         name: Like(`%${key}%`)
       }
     }
-    console.log(condition)
     const [listProduct, total] = await this.repository.findAndCount({
       where: {
         ...condition,
-        // name: Like(`%${key}%`)
       },
 
       ...conditionOrderBy,
@@ -85,19 +75,10 @@ export class ProductService {
 
   async createProduct(dto: CreateProductInput) {
     const { images, ...createProduct } = dto;
-    // console.log(images)
     let condition = {}
-    // if (images) {
-    //   condition = {
-    //     listImage: images
-    //   }
-    // }
     if (images) {
       let imageArray = JSON.parse(images)
-      console.log(Array.isArray(images))
-      console.log(images)
       let _images = imageArray.map((image) => {
-        // const base64Data = image.replace(/^data:image\/png;base64,/, ''); // Loại bỏ tiền tố
         const filename = `image_${Date.now()}.png`; // Đặt tên cho tệp
         const filePath = join('public', filename); // Đường dẫn đến thư mục public
         // Ghi tệp vào đĩa
@@ -110,31 +91,19 @@ export class ProductService {
         listImage: _images
       }
     }
-    // return { message: 'Tệp đã được tải lên và lưu trữ thành công', filename };
     const product = await this.repository.save({ ...createProduct, listImage: [], ...condition, status: 1 });
-    // await Promise.all(
-    //   images.map((image) => {
-    //     const _image = new Image();
-    //     _image.image = image;
-    //     _image.productId = product.id;
-    //     return _image.save();
-    //   }),
-    // );
     return product;
   }
 
   async updateProduct(dto: CreateProductInput, id: number) {
-    // delete(dto.type)
     const { images } = dto;
     delete(dto.images)
     let condition = {}
-    // console.log(images)
+
     if (images) {
       let imageArray = JSON.parse(images)
-      console.log(Array.isArray(images))
-      console.log(images)
       let _images = imageArray.map((image) => {
-        // const base64Data = image.replace(/^data:image\/png;base64,/, ''); // Loại bỏ tiền tố
+      
         const filename = `image_${Date.now()}.png`; // Đặt tên cho tệp
         const filePath = join('public', filename); // Đường dẫn đến thư mục public
         // Ghi tệp vào đĩa
@@ -155,10 +124,9 @@ export class ProductService {
         ...dto,
         ...condition
       },
-    );console.log('aaaaaaaaaaaaaa')
+    );
 
     return JSON.stringify('success')
-    // return 'success'
   }
 
   async deleteProduct(id: number) {

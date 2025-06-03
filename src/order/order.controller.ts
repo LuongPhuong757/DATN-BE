@@ -26,47 +26,31 @@ export class OrderController {
 
 
   @Get('statistical')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // // @Roles(ROLE.ADMIN)
   async getStatisticalUser(
-    // @Query() getListProductInput: GetListProductInput,
   ) {
-    console.log('1')
     return this.orderService.getStatisticaCart()
   }
 
   @Get('statistical-revenue')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // // @Roles(ROLE.ADMIN)
   async getStatisticalUserRevenue(
-    // @Query() getListProductInput: GetListProductInput,
   ) {
-    console.log('1')
     return this.orderService.getStatisticalUserRevenue()
   }
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
   async getOrder(
     @UserScope() user: User,
     @Query() getListProductInput: GetListProductInput
   ) {
-    console.log('mmmmmmmmmmm')
     return this.orderService.getOrder(user, getListProductInput);
   }
 
   @Delete(':id')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
   async deleteOrder(
    @UserScope() user: User,
-      //  @Body() dto: CreateProductInput,
        @Param('id') id: number,
   ) {
-    console.log('mmmmmmmmmmm')
+
     return this.orderService.deleteOrder(id);
   }
 

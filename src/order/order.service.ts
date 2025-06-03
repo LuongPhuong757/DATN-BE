@@ -6,12 +6,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cart } from 'entities/cart.entity';
 import { OrderProduct } from 'entities/order-product.entity';
 import { Order } from 'entities/order.entity';
-import { Product } from 'entities/product.entity';
 import { User } from 'entities/user.entity';
 import { StatusCart } from 'src/cart/cart.constants';
 import { GetListProductInput } from 'src/product/dto/product.dto';
 import { Repository } from 'typeorm';
-import { CreateOrderInput } from './dto/order.dto';
 import * as moment from 'moment';
 @Injectable()
 export class OrderService {
@@ -48,7 +46,6 @@ export class OrderService {
   }
 
   async getOrder(user: User, getListProductInput: GetListProductInput) {
-    // console.log(user)
     const { page, limit } = getListProductInput;
     let conditionPage = {}
     if (page && limit) {

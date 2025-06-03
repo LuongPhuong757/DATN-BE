@@ -19,8 +19,6 @@ export class CartService {
 
   async getCart(getCartInput: GetCartInput, user: User) {
     const { page, limit } = getCartInput;
-console.log(user)
-    // const skip = (page - 1) * limit;
     let conditionPage = {}
     if (page && limit) {
       const skip = (page - 1) * limit;
@@ -40,7 +38,6 @@ console.log(user)
     let totalProduct = 0;
     if (result.length > 0) {
       totalMoney = result.reduce((total, cart) => {
-        console.log(cart)
         if (cart.product && cart.product.price) {
           if (cart.product) {
             totalProduct += cart.amount
@@ -50,7 +47,6 @@ console.log(user)
         return total;
       }, 0)
     }
-console.log(totalMoney, totalProduct)
     return { result, totalMoney, totalProduct };
   }
 

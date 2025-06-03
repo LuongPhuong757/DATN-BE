@@ -67,25 +67,16 @@ export class UserController {
     const [listUser, total] = await User.findAndCount({
       ...conditionPage,
     });
-    // console.log(listUser, total)
     return { listUser, total };
   }
 
   @Get('statistical')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // // @Roles(ROLE.ADMIN)
   async getStatisticalUser(
-    // @Query() getListProductInput: GetListProductInput,
   ) {
-    console.log('1')
     return this.userService.getStatisticalUser()
   }
 
   @Get(':id')
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(ROLE.ADMIN)
   async getUser(
     @Param('id') id: number,
   ) {
@@ -97,7 +88,6 @@ export class UserController {
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(ROLE.ADMIN)
   async deleteUser(
     @Param('id') id: number,
   ) {
