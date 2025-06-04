@@ -29,7 +29,8 @@ export class OrderService {
     const totalMoney = cart.reduce((total, item) => { return total + item.product.price }, 0)
     const order = await this.repository.save({
       userId: user.id,
-      totalMoney
+      totalMoney,
+      status: 'pending'
     })
     await Promise.all(cart.map((item) => {
       const orderProduct = new OrderProduct()
@@ -198,6 +199,7 @@ export class OrderService {
     //   });
     // }
     if (result) {
+      console.log(result)
       let length = result.length
       if (result.length < 6) {
         for (let i = 1; i <= 6 - length; i++) {
@@ -218,5 +220,19 @@ export class OrderService {
   async deleteOrder(id: number) {
     await Order.delete(id);
     return JSON.stringify('success')
+  }
+
+  async updateOrderStatus(id: number) {
+    const order = await this.repository.findOne({
+      where: { id }
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    order.status = 'delivered';
+    await this.repository.save(order);
+    return order;
   }
 }

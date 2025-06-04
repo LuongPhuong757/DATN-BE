@@ -1,5 +1,6 @@
 import {
-  Controller, Delete, Get, Param, Post, Query, UseGuards,
+  Controller, Delete, Get, Param, Post, Query, UseGuards, Patch,
+  Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'entities/user.entity';
@@ -50,9 +51,13 @@ export class OrderController {
    @UserScope() user: User,
        @Param('id') id: number,
   ) {
-
     return this.orderService.deleteOrder(id);
   }
 
-
+  @Put(':id/ship')
+  async updateOrderStatus(
+    @Param('id') id: number,
+  ) {
+    return this.orderService.updateOrderStatus(id);
+  }
 }
