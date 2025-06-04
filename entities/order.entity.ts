@@ -34,6 +34,18 @@ export class Order extends BaseEntity {
     @ApiProperty()
     totalMoney: number
 
+    @Column({ name: 'user_name', nullable: true })
+    @ApiProperty()
+    userName: string
+
+    @Column({ name: 'phone_number', nullable: true })
+    @ApiProperty()
+    phoneNumber: string
+
+    @Column({ nullable: true })
+    @ApiProperty()
+    address: string
+
     @CreateDateColumn({ name: 'created_at', nullable: true })
     @ApiProperty()
     createdAt: Date

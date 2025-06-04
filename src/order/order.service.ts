@@ -11,6 +11,8 @@ import { StatusCart } from 'src/cart/cart.constants';
 import { GetListProductInput } from 'src/product/dto/product.dto';
 import { Repository } from 'typeorm';
 import * as moment from 'moment';
+import { CreateOrderInput } from './dto/order.dto';
+// import { CreateOrderInput } from 'src/order/dto/create-order.dto';
 @Injectable()
 export class OrderService {
   constructor(
@@ -18,7 +20,7 @@ export class OrderService {
     private readonly repository: Repository<Order>,
   ) { }
 
-  async paymentOrders(user: User) {
+  async paymentOrders(user: User, createOrderInput: CreateOrderInput) {
     const cart = await Cart.find({
       where: {
         userId: user.id
@@ -30,7 +32,10 @@ export class OrderService {
     const order = await this.repository.save({
       userId: user.id,
       totalMoney,
-      status: 'pending'
+      status: 'pending',
+      userName: createOrderInput.userName,
+      phoneNumber: createOrderInput.phoneNumber,
+      address: createOrderInput.address
     })
     await Promise.all(cart.map((item) => {
       const orderProduct = new OrderProduct()

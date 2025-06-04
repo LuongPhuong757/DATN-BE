@@ -2,19 +2,24 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsNumber,
+  IsString,
+  IsOptional,
 } from 'class-validator';
 
 
 export class CreateOrderInput {
-  @ApiProperty({
-    example: [{
-      productId: 1,
-      amount: 1,
-      price: 1000
-    }]
-  })
-  @IsArray()
-  listProduct: ProductInCart;
+
+  @ApiProperty({ example: 'John Doe' })
+  @IsString()
+  userName: string;
+
+  @ApiProperty({ example: '0961452042' })
+  @IsString()
+  phoneNumber: string;
+
+  @ApiProperty({ example: 'Ha noi' })
+  @IsString()
+  address: string;
 }
 
 export class ProductInCart {

@@ -1,6 +1,7 @@
 import {
   Controller, Delete, Get, Param, Post, Query, UseGuards, Patch,
   Put,
+  Body,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'entities/user.entity';
@@ -8,8 +9,7 @@ import { GetListProductInput } from 'src/product/dto/product.dto';
 import { UserScope } from 'src/user/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/user/guards/jwt-auth.guard';
 import { OrderService } from './order.service';
-
-
+import { CreateOrderInput } from './dto/order.dto';
 
 @ApiTags('Order')
 @Controller('order')
@@ -21,8 +21,9 @@ export class OrderController {
   @ApiBearerAuth()
   async createOrder(
     @UserScope() user: User,
+    @Body() createOrderInput: CreateOrderInput,
   ) {
-    return this.orderService.paymentOrders(user);
+    return this.orderService.paymentOrders(user, createOrderInput);
   }
 
 
